@@ -1,0 +1,149 @@
+// main repository commit hash: 
+// ${MAIN_HEAD_HASH}
+
+// config repository commit hash: 
+// ${CONFIG_HEAD_HASH}
+
+#pragma once
+#include <cstddef>
+#include <cstdint>
+#include "hls_half.h"
+#include "hlslib/xilinx/Operators.h"
+#include "hlslib/xilinx/DataPack.h"
+#include "hlslib/xilinx/Resource.h"
+#include "hlslib/xilinx/Stream.h"
+
+using CONFIG_DTYPE = ${CFG0_DATA_TYPE};
+constexpr unsigned CONFIG_DTYPE_SIZE = ${CFG0_DATA_TYPE_SIZE};
+constexpr unsigned CONFIG_M_AXI_WIDTH = ${CFG0_M_AXI_WIDTH};
+
+using MemoryPackF_t = hlslib::DataPack<CONFIG_DTYPE, CONFIG_M_AXI_WIDTH>;
+using MemoryPackI_t = hlslib::DataPack<unsigned, CONFIG_M_AXI_WIDTH>;
+
+namespace ConfigTaskConv2
+{
+    constexpr int BankIndex_inputTn = ${CFG1_Conv2_DDRBANK_inputTn};
+    constexpr int BankIndex_weightTn = ${CFG1_Conv2_DDRBANK_weightTn};
+    constexpr int BankIndex_biasTn = ${CFG1_Conv2_DDRBANK_biasTn};
+    constexpr int BankIndex_outputTn = ${CFG1_Conv2_DDRBANK_outputTn};
+
+    constexpr int kMemoryWidthBytesN = ${CFG1_CONV2_MEMORY_BUS_WIDTH_N};
+    constexpr int kMemoryWidthBytesK = ${CFG1_CONV2_MEMORY_BUS_WIDTH_K};
+    constexpr int kMemoryWidthBytesM = ${CFG1_CONV2_MEMORY_BUS_WIDTH_M};
+    constexpr unsigned long kOuterTileSizeN = ${CFG1_CONV2_MEMORY_TILE_SIZE_N};
+    constexpr unsigned long kOuterTileSizeM = ${CFG1_CONV2_MEMORY_TILE_SIZE_M};
+    constexpr unsigned long kInnerTileSizeN = ${CFG1_CONV2_PARALLELISM_N};
+    constexpr int kComputeTileSizeM = ${CFG1_CONV2_PARALLELISM_M}; 
+    constexpr int kComputeTileSizeN = 1;
+    constexpr int kTransposeWidthBytes = ${CFG1_CONV2_TRANSPOSE_WIDTH};
+    constexpr float kFrequency = ${KernelFrequency}; 
+    using OperatorMap = hlslib::op::${CFG1_CONV2_MAP_OP}<CONFIG_DTYPE>;
+    using OperatorReduce = hlslib::op::${CFG1_CONV2_REDUCE_OP}<CONFIG_DTYPE>;
+    #if ${CFG1_CONV2_MEMORY_BUS_WIDTH_M} != ${CFG1_CONV2_KERNEL_WIDTH_M} 
+        #define MM_CONVERT_B
+    #endif
+    // When A is not transposed, the data width must be converted if a PE buffers
+    // more than one row of A (currently unsupported). When A is transposed, the
+    // data width must be converted if the memory bus is wider than the number of
+    // rows buffered per PE.
+    #if (defined(MM_TRANSPOSED_A) && \
+         (${CFG0_DATA_TYPE_SIZE} != ${CFG1_CONV2_MEMORY_BUS_WIDTH_N}))
+        #define MM_CONVERT_A
+    #endif
+}
+
+namespace ConfigTaskTopK
+{
+    constexpr int BankIndex_inputTn = ${CFG2_TopK_DDRBANK_inputTn};
+    constexpr int BankIndex_indicesSplitedTn = ${CFG2_TopK_DDRBANK_indicesSplitedTn};
+    constexpr unsigned MaxSliceLen = ${CFG2_TopK_MaxSliceLen};
+    //constexpr unsigned PipeDepth = ${CFG2_TopK_PipeDepth};
+    constexpr unsigned UnitCount = ${CFG2_TopK_UnitCount};
+    constexpr unsigned MaxK = ${CFG2_TopK_MaxK};
+}
+
+namespace ConfigTaskMatOps
+{
+    constexpr int BankIndex_inputTn1 = ${CFG3_MatOps_DDRBANK_inputTn1};
+    constexpr int BankIndex_inputTn2 = ${CFG3_MatOps_DDRBANK_inputTn2};
+    constexpr int BankIndex_outputTn = ${CFG3_MatOps_DDRBANK_outputTn};
+    constexpr unsigned PipeDepth = ${CFG3_MatOps_PipeDepth};
+}
+
+namespace ConfigTaskReduce
+{
+    constexpr int BankIndex_inputTn  = ${CFG4_Reduce_DDRBANK_inputTn}; 
+    constexpr int BankIndex_outputTn = ${CFG4_Reduce_DDRBANK_outputTn};
+    namespace Sum4D{
+        constexpr int MaxPowY = ${CFG4_ReduceSum4D_MaxPowY};
+        constexpr unsigned MaxSliceLen = ${CFG4_ReduceSum4D_MaxSliceLen};
+        //constexpr unsigned PipeDepth = ${CFG4_ReduceSum4D_PipeDepth};
+    }
+    namespace Max3D{
+        constexpr unsigned MaxSliceLen = ${CFG4_ReduceMax_MaxSliceLen};
+    }
+    namespace Sum3D{
+        constexpr unsigned MaxSliceLen = ${CFG4_ReduceSum_MaxSliceLen};
+        constexpr unsigned PipeDepth = ${CFG4_ReduceSum_PipeDepth};
+    }
+}
+
+namespace ConfigTaskMatMul
+{
+    constexpr int BankIndex_inputTn1 = ${CFG5_MatMul_DDRBANK_inputTn1};
+    constexpr int BankIndex_inputTn2 = ${CFG5_MatMul_DDRBANK_inputTn2};
+    constexpr int BankIndex_outputTn = ${CFG5_MatMul_DDRBANK_outputTn};
+    constexpr unsigned MaxM = ${CFG5_MatMul_MaxM};
+    constexpr unsigned RowTileSizeD = ${CFG5_MatMul_RowTileSizeD};
+}
+
+namespace ConfigTaskTile
+{
+    constexpr int BankIndex_inputTn = ${CFG6_Tile_DDRBANK_inputTn};
+    constexpr int BankIndex_outputTn = ${CFG6_Tile_DDRBANK_outputTn};
+    constexpr unsigned MaxSliceLen = ${CFG6_Tile_MaxSliceLen}; 
+}
+
+namespace ConfigTaskGather
+{
+    constexpr int BankIndex_inputTn = ${CFG7_Gather_DDRBANK_inputTn}; 
+    constexpr int BankIndex_indicesTn = ${CFG7_Gather_DDRBANK_indicesTn}; 
+    constexpr int BankIndex_outputTn = ${CFG7_Gather_DDRBANK_outputTn};
+    constexpr unsigned PipeDepth = ${CFG7_Gather_PipeDepth};
+}
+
+namespace ConfigTaskConcat 
+{    
+    constexpr int BankIndex_inputTn1 = ${CFG8_Concat_DDRBANK_inputTn1};
+    constexpr int BankIndex_inputTn2 = ${CFG8_Concat_DDRBANK_inputTn2};
+    constexpr int BankIndex_outputTn = ${CFG8_Concat_DDRBANK_outputTn};
+    constexpr unsigned PipeDepth = ${CFG8_Concat_PipeDepth};
+}
+
+namespace ConfigTaskTranspose
+{
+    constexpr int BankIndex_inputTn = ${CFG9_Transpose_DDRBANK_inputTn};
+    constexpr int BankIndex_outputTn = ${CFG9_Transpose_DDRBANK_outputTn};
+    constexpr unsigned PipeDepth1 = ${CFG9_Transpose_PipeDepth1};
+    constexpr unsigned PipeDepth2 = ${CFG9_Transpose_PipeDepth2};
+}
+
+namespace ConfigTaskReluSqrtSquare
+{
+    constexpr int BankIndex_inputTn = ${CFG10_ReluSqrtSquare_DDRBANK_inputTn};
+    constexpr int BankIndex_outputTn = ${CFG10_ReluSqrtSquare_DDRBANK_outputTn};
+    constexpr unsigned ModeRelu = 0;
+    constexpr unsigned ModeSqrt = 1;
+    constexpr unsigned ModeSquare = 2;
+}
+
+namespace ConfigTaskPadUnpad
+{
+    constexpr int BankIndex_inputTn = ${CFG11_PadUnpad_DDRBANK_inputTn};
+    constexpr int BankIndex_outputTn = ${CFG11_PadUnpad_DDRBANK_outputTn};
+}
+
+namespace ConfigTaskDataMover
+{
+    constexpr unsigned PipeDepth = ${CFG12_DataMover_PipeDepth};
+}

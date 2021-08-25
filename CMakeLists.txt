@@ -149,6 +149,10 @@ execute_process(
     OUTPUT_VARIABLE
         MAIN_HEAD_HASH)
 
+# remove the newlines
+string(REGEX REPLACE "\n$" "" MAIN_HEAD_HASH "${MAIN_HEAD_HASH}")
+string(REGEX REPLACE "\n$" "" CONFIG_HEAD_HASH "${CONFIG_HEAD_HASH}")
+
 configure_file(${PROJECT_SOURCE_DIR}/config/raw/xilinx/config.h.in ${PROJECT_SOURCE_DIR}/config/output/xilinx/config.h)
 configure_file(${PROJECT_SOURCE_DIR}/config/output/xilinx/config.h ${CMAKE_BINARY_DIR}/config.h.log COPYONLY)
 include(${CMAKE_SOURCE_DIR}/config/cmake_inc/report_memory_banks.cmake)

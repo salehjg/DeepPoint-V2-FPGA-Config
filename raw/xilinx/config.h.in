@@ -13,6 +13,9 @@
 #include "hlslib/xilinx/Resource.h"
 #include "hlslib/xilinx/Stream.h"
 
+constexpr char REPO_HASH_MAIN[] = "${MAIN_HEAD_HASH}";
+constexpr char REPO_HASH_CONFIG[] = "${CONFIG_HEAD_HASH}";
+
 using CONFIG_DTYPE = ${CFG0_DATA_TYPE};
 constexpr unsigned CONFIG_DTYPE_SIZE = ${CFG0_DATA_TYPE_SIZE};
 constexpr unsigned CONFIG_M_AXI_WIDTH = ${CFG0_M_AXI_WIDTH};

@@ -68,10 +68,10 @@ set(CFG2_TopK_MaxSliceLen "1024" CACHE STRING "Maximum length of the input slice
 
 #-------------------------------------------------------------------------------
 # CFG3: MatOps
-set(CFG3_MatOps_DDRBANK_inputTn1 "1" CACHE STRING "DDR bank index for the given parameter")
-set(CFG3_MatOps_DDRBANK_inputTn2 "1" CACHE STRING "DDR bank index for the given parameter")
-set(CFG3_MatOps_DDRBANK_outputTn "1" CACHE STRING "DDR bank index for the given parameter")
-set(CFG3_MatOps_PipeDepth  "1" CACHE STRING "FIFO depth")
+set(CFG3_BasicOps_DDRBANK_inputTn1 "1" CACHE STRING "DDR bank index for the given parameter")
+set(CFG3_BasicOps_DDRBANK_inputTn2 "1" CACHE STRING "DDR bank index for the given parameter")
+set(CFG3_BasicOps_DDRBANK_outputTn "1" CACHE STRING "DDR bank index for the given parameter")
+set(CFG3_BasicOps_PipeDepth  "1" CACHE STRING "FIFO depth")
 
 #-------------------------------------------------------------------------------
 # CFG4: Reduce

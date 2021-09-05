@@ -65,12 +65,12 @@ namespace ConfigTaskTopK
     constexpr unsigned MaxK = ${CFG2_TopK_MaxK};
 }
 
-namespace ConfigTaskMatOps
+namespace ConfigTaskBasicOps
 {
-    constexpr int BankIndex_inputTn1 = ${CFG3_MatOps_DDRBANK_inputTn1};
-    constexpr int BankIndex_inputTn2 = ${CFG3_MatOps_DDRBANK_inputTn2};
-    constexpr int BankIndex_outputTn = ${CFG3_MatOps_DDRBANK_outputTn};
-    constexpr unsigned PipeDepth = ${CFG3_MatOps_PipeDepth};
+    constexpr int BankIndex_inputTn1 = ${CFG3_BasicOps_DDRBANK_inputTn1};
+    constexpr int BankIndex_inputTn2 = ${CFG3_BasicOps_DDRBANK_inputTn2};
+    constexpr int BankIndex_outputTn = ${CFG3_BasicOps_DDRBANK_outputTn};
+    constexpr unsigned PipeDepth = ${CFG3_BasicOps_PipeDepth};
 }
 
 namespace ConfigTaskReduce
